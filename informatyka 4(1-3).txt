@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <math.h>
+#include "rk4.h"
+#include "rk4.cpp"
+//λ
+
+double y_0 = 1;
+double t_0 = 0, t_k = 2;
+double λ = 2;
+
+double f(double t, double y);
+double y_an(double t);
+
+int main()
+{
+	double t = t_0, y = y_0,h = 0.01, eps_eu, eps_rk4;
+
+FILE *plik1 = fopen("data1.txt","w");
+
+	  //metoda eulera
+	for (int i = 0; i < t_k / h; i++)
+	{
+		t += h;
+		y += h * f(t, y);
+		eps_eu = fabs(y - y_an(t)) / fabs(y_an(t));
+
+	printf("t:%lf\ty:%lf\teps:%lf\n", t, y, eps_eu);
+  fprintf(plik1,"%lf\t%lf\t%lf\n", t, y, eps_rk4);
+	}
+
+
+
+printf ("\nMETODA RK4\n");
+
+t = t_0;
+y = y_0;
+	for (int i = 0; i < t_k / h; i++)
+	{
+		t += h;
+		y = rk4(t, y, h, f);
+		eps_rk4 = fabs(y - y_an(t)) / fabs(y_an(t));
+    printf("%lf\t%lf\t%lf\n", t, y, eps_rk4);
+    fprintf(plik1,"%lf\t%lf\t%lf\n", t, y, eps_rk4);
+	}
+	
+	fclose(plik1);
+}
+
+double f(double t, double y)//funkcja właściwa
+{
+	return λ * y;
+}
+double y_an(double t)
+{
+	return y_0 * exp(λ * (t - t_0));//funkcja rozwiązana dy/dt 
+}

@@ -1,0 +1,60 @@
+double y_0 = 1;
+double t_0 = 0, t_k = 2;
+double λ = 2;
+
+double f(double t, double y);
+double y_an(double t);
+
+int main()
+{
+	double t = t_0, y = y_0,h = 0.01, eps_eu, eps_rk4,N;
+
+FILE *plik1 = fopen("data1.txt","w");
+FILE *plik2 = fopen("data2.txt","w");
+FILE *plik3 = fopen("data3.txt","w");
+
+	  //metoda eulera
+  
+   for (int i = 0; i < 7; i++)
+	{
+		double N = pow(2, i);
+		
+		t = t_0, y = y_0; fprintf(plik2, "N = %lf\n", N);
+		
+		for (int j = 0; j < N; j++)
+		{
+			t += (t_k / N);
+			y += (t_k / N) * f(t, y);
+			eps_eu = fabs(y - y_an(t)) / fabs(y_an(t));
+
+			fprintf(plik2, "%lf\t%lf\t%lf\n", t, y, eps_eu);
+		}
+		
+		t = t_0, y = y_0; fprintf(plik3, "N = %lf\n", N);
+
+		for (int j = 0; j < N; j++)
+		{
+			t += (t_k / N);
+			y = rk4(t, y, (t_k / N), f);
+			eps_rk4 = fabs(y - y_an(t)) / fabs(y_an(t));
+
+			fprintf(plik3, "%lf\t%lf\t%lf\n", t, y, eps_rk4);
+		}
+
+		fprintf(plik3, "%lf\t%lf\t%lf\t%lf\n", N, (t_k / N), eps_eu, eps_rk4);
+	}
+	
+	fclose(plik1);
+  fclose(plik2);
+  fclose(plik3);
+
+}
+
+double f(double t, double y)//funkcja właściwa
+{
+	return λ * y;
+}
+double y_an(double t)
+{
+	return y_0 * exp(λ * (t - t_0));//funkcja rozwiązana dy/dt 
+}
